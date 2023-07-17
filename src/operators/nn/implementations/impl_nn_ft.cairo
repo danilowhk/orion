@@ -13,7 +13,7 @@ use orion::operators::nn::functional::leaky_relu::leaky_relu_i8::core::leaky_rel
 use orion::numbers::fixed_point::core::{FixedType};
 
 
-impl NN_i8 of NNTrait<FixedType> {
+impl NN_ft of NNTrait<FixedType> {
 
     fn linear(inputs: Tensor<FixedType>, weights: Tensor<FixedType>, bias: Tensor<FixedType>) -> Tensor<FixedType> {
         linear_i8(inputs, weights, bias)
