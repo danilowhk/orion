@@ -476,6 +476,11 @@ fn i8_min(a: i8, b: i8) -> i8 {
     }
 }
 
+/// Cf: IntegerTrait::min docstring
+fn i8_and(a: i8, b: i8) -> {
+    return a && b;
+}
+
 fn i8_to_i32(x: i8) -> i32 {
     i32 { mag: x.mag.into(), sign: x.sign }
 }
