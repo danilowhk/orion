@@ -451,6 +451,11 @@ fn i32_max(a: i32, b: i32) -> i32 {
     }
 }
 
+/// Cf: IntegerTrait::and docstring
+fn i32_logical_and(a: i32, b: i32) -> bool {
+    return a.mag && b.mag;
+}
+
 /// Cf: IntegerTrait::min docstring
 fn i32_min(a: i32, b: i32) -> i32 {
     if (a < b) {

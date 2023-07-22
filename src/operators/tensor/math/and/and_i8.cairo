@@ -1,7 +1,8 @@
 use array::ArrayTrait;
 use option::OptionTrait;
 use array::SpanTrait;
-use orion::numbers::signed_integer::i8::i8;
+use orion::numbers::signed_integer::i8::{i8,i8_logical_and};
+
 use orion::operators::tensor::implementations::impl_tensor_u32::Tensor_u32;
 use orion::operators::tensor::core::{Tensor, TensorTrait};
 
@@ -12,7 +13,6 @@ fn and(y: @Tensor<i8>, z: @Tensor<i8>) -> Tensor<usize> {
 
     let mut data_result = ArrayTrait::<usize>::new();
 
-    // Question: why do we need to check which has bigger len?
     let (mut smaller, mut bigger, retains_input_order) = if (*y.data).len() < (*z.data).len() {
         (y, z, true)
     } else {
@@ -28,7 +28,6 @@ fn and(y: @Tensor<i8>, z: @Tensor<i8>) -> Tensor<usize> {
             break ();
         };
 
-        // Question: why do we need this part of the code before "value"?
         let bigger_current_index = *bigger_data.pop_front().unwrap();
         let smaller_current_index = *smaller_data[smaller_index];
 
@@ -38,8 +37,11 @@ fn and(y: @Tensor<i8>, z: @Tensor<i8>) -> Tensor<usize> {
             (bigger_current_index, smaller_current_index)
         };
 
-        let value = y_value && z_value;
-        data_result.append(value);
+        if i8_logical_and(y_value, z_value) {
+            data_result.append(1);
+        } else {
+            data_result.append(0);
+        }
 
         smaller_index = (1 + smaller_index) % smaller_data.len();
     };

@@ -38,8 +38,11 @@ fn and(y: @Tensor<FixedType>, z: @Tensor<FixedType>) -> Tensor<usize> {
             (bigger_current_index, smaller_current_index)
         };
 
-        let value = y_value && z_value;
-        data_result.append(value);
+        if y_value & z_value {
+            data_result.append(1);
+        } else {
+            data_result.append(0);
+        }
 
         smaller_index = (1 + smaller_index) % smaller_data.len();
     };
