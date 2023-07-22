@@ -440,6 +440,18 @@ fn min(a: FixedType, b: FixedType) -> FixedType {
     }
 }
 
+/// Cf: FixedTrait::and docstring
+fn logical_and(a: FixedType, b: FixedType) -> bool {
+    let zero = FixedTrait::new(0, false);
+    if a > zero && b > zero {
+        return true;
+    } else if(a == zero && b == zero){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /// INTERNAL
 
 /// Calculates the most significant bit of a u128 number.

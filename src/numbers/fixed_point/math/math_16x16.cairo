@@ -303,6 +303,19 @@ fn neg(a: FixedType) -> FixedType {
     }
 }
 
+
+/// Cf: FixedTrait::and docstring
+fn logical_and(a: FixedType, b: FixedType) -> bool {
+    let zero = FixedTrait::new(0, false);
+    if a > zero && b > zero {
+        return true;
+    } else if(a == zero && b == zero){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /// Cf: FixedTrait::pow docstring
 fn pow(a: FixedType, b: FixedType) -> FixedType {
     let (div_u128, rem_u128) = _split_unsigned(b);

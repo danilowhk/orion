@@ -453,7 +453,14 @@ fn i32_max(a: i32, b: i32) -> i32 {
 
 /// Cf: IntegerTrait::and docstring
 fn i32_logical_and(a: i32, b: i32) -> bool {
-    return true;
+    let zero = IntegerTrait::new(0, false);
+    if a > zero && b > zero {
+        return true;
+    } else if(a == zero && b == zero){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /// Cf: IntegerTrait::min docstring

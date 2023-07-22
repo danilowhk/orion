@@ -1,20 +1,25 @@
 use array::ArrayTrait;
 use option::OptionTrait;
 use array::SpanTrait;
-use orion::numbers::signed_integer::i32::{i32};
+use orion::numbers::fixed_point::core::FixedType;
+
+use orion::numbers::fixed_point::implementations::impl_8x23::FP8x23PartialOrd;
+use orion::numbers::fixed_point::math::math_8x23::logical_and;
 use orion::operators::tensor::implementations::impl_tensor_u32::Tensor_u32;
 use orion::operators::tensor::core::{Tensor, TensorTrait};
 
 use orion::operators::tensor::helpers::check_compatibility;
 
-fn and(y: @Tensor<u32>, z: @Tensor<u32>) -> Tensor<usize> {
+
+/// Cf: TensorTrait::greater_equal docstring
+fn and(y: @Tensor<FixedType>, z: @Tensor<FixedType>) -> Tensor<usize> {
     check_compatibility(*y.shape, *z.shape);
 
     let mut data_result = ArrayTrait::<usize>::new();
     let (mut smaller, mut bigger, retains_input_order) = if (*y.data).len() < (*z.data).len() {
         (y, z, true)
     } else {
-        (z, y , false)
+        (z, y, false)
     };
 
     let mut bigger_data = *bigger.data;
@@ -35,9 +40,7 @@ fn and(y: @Tensor<u32>, z: @Tensor<u32>) -> Tensor<usize> {
             (bigger_current_index, smaller_current_index)
         };
 
-        if y_value > 0 && z_value > 0 {
-            data_result.append(1);
-        } else if(y_value == 0 && z_value == 0){
+        if logical_and(y_value, z_value) {
             data_result.append(1);
         } else {
             data_result.append(0);

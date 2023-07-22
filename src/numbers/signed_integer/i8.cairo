@@ -478,7 +478,14 @@ fn i8_min(a: i8, b: i8) -> i8 {
 
 /// Cf: IntegerTrait::and docstring
 fn i8_logical_and(a: i8, b: i8) -> bool {
-    return true;
+    let zero = IntegerTrait::new(0, false);
+    if a > zero && b > zero {
+        return true;
+    } else if(a == zero && b == zero){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 fn i8_to_i32(x: i8) -> i32 {
