@@ -8,46 +8,6 @@ use orion::operators::tensor::core::{Tensor, TensorTrait};
 
 use orion::operators::tensor::helpers::check_compatibility;
 
-fn and(y: @Tensor<i8>, z: @Tensor<i8>) -> Tensor<usize> {
-    check_compatibility(*y.shape, *z.shape);
-
-    let mut data_result = ArrayTrait::<usize>::new();
-
-    let (mut smaller, mut bigger, retains_input_order) = if (*y.data).len() < (*z.data).len() {
-        (y, z, true)
-    } else {
-        (z, y , false)
-    };
-
-    let mut bigger_data = *bigger.data;
-    let mut smaller_data = *smaller.data;
-    let mut smaller_index = 0;
-
-    loop {
-        if bigger_data.len() == 0 {
-            break ();
-        };
-
-        let bigger_current_index = *bigger_data.pop_front().unwrap();
-        let smaller_current_index = *smaller_data[smaller_index];
-
-        let (y_value, z_value) = if retains_input_order {
-            (smaller_current_index, bigger_current_index)
-        } else {
-            (bigger_current_index, smaller_current_index)
-        };
-
-        if i8_logical_and(y_value, z_value) {
-            data_result.append(1);
-        } else {
-            data_result.append(0);
-        }
-
-        smaller_index = (1 + smaller_index) % smaller_data.len();
-    };
-
-    return TensorTrait::<usize>::new(*bigger.shape, data_result.span(), *y.extra);
-}
 
 fn generate_output(tensor_a_shape: Array<i8>, tensor_b_shape: Array<i8>, output_shape: Array<i8>, y: @Tensor<i8>, z: @Tensor<i8>) -> Tensor<i8> {
     //1. Create dict_of_indexes inside tensar_a_shape, tensar_b_shape, output_shape
@@ -118,35 +78,106 @@ fn generate_output(tensor_a_shape: Array<i8>, tensor_b_shape: Array<i8>, output_
             }
         }
     }
+    let mut result_tensor = Tensor::new::<i8>();
+    //TODO: 4. Loop through out shape
+    // einsum_nested_loop();
+    return result_tensor;
+}
 
-    //4. Loop through out shape
-    let n = 3;
-    let value_n1 = 3;
-    let value_n2 = 4;
-    let value_n3 = 4;
+// Nested loop function
 
-
-    loop {
-        // n = 3
-        if value_n1 == 0 {
-            break ();
-        };
+fn einsum_nested_loop(n : usize, array_n: Array<usize>, m: usize, array_m: Array<usize> , tensor_a: Tensor<i8> , tensor_b: Tensor<i8>, a_indices: Array<i8> , b_indices: Array<i8>, results_indices: Array<i8> , n_index: usize, m_index: usize, indices: Array<usize>) {
+    if n_index < n {
+        let i = 0;
         loop {
-            // n = 2
-            if value_n2 == 0 {
+            if i >= array_n[n_index] {
                 break ();
-            } 
-            // n = 1
-            loop {
-                if value_n3 == 0 {
-                    break ();
-                }
-            }
+            };
+            // TODO: fix indices , or consider using dict
+            einsum_nested_loop(n, array_n, m, array_m, tensor_a, tensor_b, a_indices, b_indices, results_indices, n_index + 1, m_index, indices + [i]);
+            i = i + 1;
+        }
+    } else if (m_index < m) {
+        let i = 0;
+        loop {
+            if i >= array_m[m_index] {
+                break ();
+            };
+            // TODO: fix indices , or consider using dict
+            einsum_nested_loop(n, array_n, m, array_m, tensor_a, tensor_b, a_indices, b_indices, results_indices, n_index, m_index + 1, indices + [i]);
+            i = i + 1;
+        }
+    } else {
+        let results_tensor_indices = ArrayTrait::new::<i8>();
+        let idx = 0;
+        loop {
+            if idx >= indices.len() {
+                break ();
+            };
+            let index = indices[idx];
+            results_tensor_indices.append(index);
+            idx = idx + 1;
+        }
 
+        let a_tensor_indices = ArrayTrait::new::<i8>();
+        let idx = 0;
+        loop {
+            if idx >= a_indices.len() {
+                break ();
+            };
+            let index = a_indices[idx];
+            a_tensor_indices.append(index);
+            idx = idx + 1;
+        }
+
+        let b_tensor_indices = ArrayTrait::new::<i8>();
+        let idx = 0;
+        loop {
+            if idx >= b_indices.len() {
+                break ();
+            };
+            let index = b_indices[idx];
+            b_tensor_indices.append(index);
+            idx = idx + 1;
+        }
+
+        set_element(result_tensor, results_tensor_indices, get_element(tensor_a, a_tensor_indices) * get_element(tensor_b, b_tensor_indices));
+    }
+
+}
+// TODO: Test get_element
+fn get_element(tensor: Tensor<i8>, indices: Array<i8>) -> i8 {
+    let mut tensor = tensor;
+    let mut indices = indices;
+    let index = indices.pop_front();
+    match index {
+        Some(index) => {
+            let tensor = tensor[index];
+            get_element(tensor, indices)
+        },
+        None => {
+            tensor
         }
     }
-
+}
+// TODO: Test set_element
+fn set_element(tensor: Tensor<i8>, indices: Array<i8>, value: i8) {
+    let mut tensor = tensor;
+    let mut indices = indices;
+    let mut value = value;
+    let index = indices.pop_front();
+    match index {
+        Some(index) => {
+            let tensor = tensor[index];
+            set_element(tensor, indices, value);
+        },
+        None => {
+            tensor = value;
+        }
     }
+}
+
+
 
 
 
